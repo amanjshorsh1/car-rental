@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% from "_macros.html" import car_visual, spec_grid %}
+{% block content %}
+<a class="back" href="{{ url_for('index') }}">{{ '→' if dir == 'rtl' else '←' }} {{ t('back') }}</a>
+
+<div class="detail">
+  <section class="detail-main">
+    <div class="stage">{{ car_visual(car, photo_url(car)) }}</div>
+    <div class="title-row">
+      <h1>{{ car.name }}</h1>
+      <span class="tag solid">{{ t('cat_' ~ car.category) }}</span>
+    </div>
+    {{ spec_grid(car, t) }}
+    <p class="rule"><b>{{ t('pricing_rule') }}</b> {{ t('rule_' ~ car.category) }}</p>
+  </section>
+
+  <aside class="book-panel">
+    <div class="price big"><span class="plate"><b>${{ '%g' % car.daily_rate }}</b></span><span class="per">{{ t('per_day') }}</span></div>
+    <h2>{{ t('booking_form') }}</h2>
+    <form method="post" action="{{ url_for('book_car', car_id=car.id) }}" id="bookForm">
+      <label>{{ t('full_name') }}
+        <input name="name" required maxlength="60" autocomplete="name">
+      </label>
+      <label>{{ t('phone') }}
+        <input name="phone" dir="ltr" required inputmode="tel" placeholder="0750 123 4567" autocomplete="tel">
+      </label>
+      <div class="two">
+        <label>{{ t('pickup_date') }}
+          <input type="date" name="start" id="start" min="{{ today }}" value="{{ start }}" required>
+        </label>
+        <label>{{ t('return_date') }}
+          <input type="date" name="end" id="end" min="{{ today }}" value="{{ end }}" required>
+        </label>
+      </div>
+      <div class="quote" id="quote" data-hint="{{ t('quote_hint') }}"
+           data-days="{{ t('quote_days') }}" data-total="{{ t('quote_total') }}"
+           data-url="{{ url_for('api_quote') }}" data-car="{{ car.id }}">
+        {{ t('quote_hint') }}
+      </div>
+      <button class="btn sun block" type="submit">{{ t('confirm_booking') }}</button>
+    </form>
+  </aside>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='app.js') }}"></script>
+{% endblock %}

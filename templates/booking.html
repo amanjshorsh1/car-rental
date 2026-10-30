@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% from "_macros.html" import car_visual %}
+{% block content %}
+<section class="ticket">
+  <div class="ticket-head">
+    <div class="check">✓</div>
+    <h1>{{ t('booking_confirmed') }}</h1>
+    <p class="ticket-no">{{ t('booking_number') }} <b dir="ltr">#{{ booking.id }}</b></p>
+  </div>
+  <div class="ticket-media">{{ car_visual(booking.car, photo_url(booking.car)) }}</div>
+  <dl class="facts">
+    <dt>{{ t('car') }}</dt><dd>{{ booking.car.name }} ({{ booking.car.year }})</dd>
+    <dt>{{ t('customer') }}</dt><dd>{{ booking.customer.name }}, <bdi dir="ltr">{{ booking.customer.phone }}</bdi></dd>
+    <dt>{{ t('period') }}</dt>
+    <dd><bdi dir="ltr">{{ booking.start }} → {{ booking.end }}</bdi> ({{ booking.days }} {{ t('quote_days') }})</dd>
+    <dt>{{ t('status') }}</dt>
+    <dd><span class="badge {{ 'ok' if booking.is_active else 'no' }}">{{ t('status_' ~ booking.status) }}</span></dd>
+  </dl>
+  <div class="ticket-total">
+    <span>{{ t('total') }}</span>
+    <span class="plate"><b>${{ '%g' % booking.total }}</b></span>
+  </div>
+  {% if booking.is_active %}
+  <form method="post" action="{{ url_for('cancel_booking', booking_id=booking.id) }}"
+        onsubmit="return confirm('{{ t('confirm_cancel') }}')">
+    <button class="btn danger block" type="submit">{{ t('cancel_booking') }}</button>
+  </form>
+  {% endif %}
+</section>
+{% endblock %}

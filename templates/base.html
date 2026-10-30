@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="{{ lang }}" dir="{{ dir }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ t('site_name') }}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Figtree:wght@400;500;600&family=Noto+Sans+Arabic:wght@400;600;800&display=swap">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<header class="topbar">
+  <div class="wrap bar">
+    <a class="brand" href="{{ url_for('index') }}"><span class="mark">A</span>{{ t('site_name') }}</a>
+    <nav>
+      <a href="{{ url_for('index') }}">{{ t('nav_home') }}</a>
+      <a href="{{ url_for('my_bookings') }}">{{ t('nav_bookings') }}</a>
+      <a href="{{ url_for('admin') }}">{{ t('nav_admin') }}</a>
+      <div class="seg" role="group" aria-label="Language">
+        <a href="{{ url_for('set_language', code='en') }}" class="{{ 'on' if lang == 'en' }}" lang="en">EN</a>
+        <a href="{{ url_for('set_language', code='ku') }}" class="{{ 'on' if lang == 'ku' }}" lang="ku">کوردی</a>
+      </div>
+    </nav>
+  </div>
+</header>
+
+{% block hero %}{% endblock %}
+
+<main class="wrap">
+  {% for kind, message in get_flashed_messages() %}
+    <div class="flash {{ kind }}" role="status">{{ message }}</div>
+  {% endfor %}
+  {% block content %}{% endblock %}
+</main>
+
+<footer class="foot"><div class="wrap">{{ t('footer') }}</div></footer>
+{% block scripts %}{% endblock %}
+</body>
+</html>

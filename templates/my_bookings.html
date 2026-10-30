@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="panel narrow">
+  <h1>{{ t('my_bookings_title') }}</h1>
+  <p class="muted">{{ t('my_bookings_hint') }}</p>
+  <form class="inline" method="get">
+    <input name="phone" dir="ltr" value="{{ phone }}" inputmode="tel" required placeholder="0750 123 4567">
+    <button class="btn" type="submit">{{ t('search') }}</button>
+  </form>
+</section>
+
+{% if phone %}
+  {% if bookings %}
+  <div class="table-wrap">
+    <table>
+      <tr><th>#</th><th>{{ t('car') }}</th><th>{{ t('period') }}</th><th>{{ t('total') }}</th><th>{{ t('status') }}</th><th></th></tr>
+      {% for b in bookings %}
+      <tr>
+        <td>{{ b.id }}</td>
+        <td>{{ b.car.name }}</td>
+        <td><bdi dir="ltr">{{ b.start }} → {{ b.end }}</bdi></td>
+        <td>${{ '%g' % b.total }}</td>
+        <td><span class="badge {{ 'ok' if b.is_active else 'no' }}">{{ t('status_' ~ b.status) }}</span></td>
+        <td>
+          {% if b.is_active %}
+          <form method="post" action="{{ url_for('cancel_booking', booking_id=b.id) }}"
+                onsubmit="return confirm('{{ t('confirm_cancel') }}')">
+            <input type="hidden" name="next" value="{{ url_for('my_bookings', phone=phone) }}">
+            <button class="btn small danger" type="submit">{{ t('cancel_booking') }}</button>
+          </form>
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </table>
+  </div>
+  {% else %}
+    <p class="empty">{{ t('no_bookings') }}</p>
+  {% endif %}
+{% endif %}
+{% endblock %}

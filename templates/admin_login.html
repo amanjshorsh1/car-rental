@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="panel narrow">
+  <h1>{{ t('admin_panel') }}</h1>
+  <form method="post">
+    <label>{{ t('password') }}
+      <input type="password" name="password" required autofocus>
+    </label>
+    <button class="btn block" type="submit">{{ t('login') }}</button>
+  </form>
+</section>
+{% endblock %}

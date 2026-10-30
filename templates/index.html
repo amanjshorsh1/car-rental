@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% from "_macros.html" import car_art, car_visual, specs %}
+
+{% block hero %}
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div class="hero-copy">
+      <h1>{{ t('hero_title') }}</h1>
+      <p>{{ t('hero_sub') }}</p>
+    </div>
+    <div class="hero-art">
+      {{ car_art('luxury', '#ffc933') }}
+      <div class="road"></div>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block content %}
+<form class="finder" method="get" action="{{ url_for('index') }}">
+  <div class="finder-row">
+    <label>{{ t('pickup_date') }}
+      <input type="date" name="start" min="{{ today }}" value="{{ start }}">
+    </label>
+    <label>{{ t('return_date') }}
+      <input type="date" name="end" min="{{ today }}" value="{{ end }}">
+    </label>
+    <label>{{ t('filter_max_price') }}
+      <input type="number" name="max_price" min="1" value="{{ max_price }}" dir="ltr">
+    </label>
+    <button class="btn sun" type="submit">{{ t('search') }}</button>
+  </div>
+  <div class="chips" role="radiogroup" aria-label="{{ t('filter_category') }}">
+    <label class="chip"><input type="radio" name="category" value="" {{ 'checked' if not category }} onchange="this.form.submit()"><span>{{ t('filter_all') }}</span></label>
+    {% for c in categories %}
+    <label class="chip"><input type="radio" name="category" value="{{ c }}" {{ 'checked' if c == category }} onchange="this.form.submit()"><span>{{ t('cat_' ~ c) }}</span></label>
+    {% endfor %}
+    {% if category or max_price or start or end %}
+      <a class="reset" href="{{ url_for('index') }}">{{ t('reset') }}</a>
+    {% endif %}
+  </div>
+</form>
+
+<p class="count">{{ t('cars_found', {'n': cars|length}) }}</p>
+
+{% if cars %}
+<div class="grid">
+  {% for car in cars %}
+  <article class="card">
+    <a class="media" href="{{ url_for('car_detail', car_id=car.id, start=start, end=end) }}" tabindex="-1" aria-hidden="true">
+      {{ car_visual(car, photo_url(car)) }}
+      <span class="tag">{{ t('cat_' ~ car.category) }}</span>
+      <span class="avail {{ 'ok' if availability[car.id] else 'no' }}">{{ t('available' if availability[car.id] else 'unavailable') }}</span>
+    </a>
+    <div class="card-body">
+      <h3><a href="{{ url_for('car_detail', car_id=car.id, start=start, end=end) }}">{{ car.name }}</a></h3>
+      {{ specs(car, t) }}
+      <div class="card-foot">
+        <div class="price"><span class="plate"><b>${{ '%g' % car.daily_rate }}</b></span><span class="per">{{ t('per_day') }}</span></div>
+        <a class="btn" href="{{ url_for('car_detail', car_id=car.id, start=start, end=end) }}">{{ t('book_now') }}</a>
+      </div>
+    </div>
+  </article>
+  {% endfor %}
+</div>
+{% else %}
+  <div class="empty">
+    <p>{{ t('no_cars') }}</p>
+    <a class="btn ghost" href="{{ url_for('index') }}">{{ t('reset') }}</a>
+  </div>
+{% endif %}
+{% endblock %}

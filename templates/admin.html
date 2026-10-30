@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-head">
+  <h1>{{ t('admin_panel') }}</h1>
+  <a class="btn ghost" href="{{ url_for('admin_logout') }}">{{ t('logout') }}</a>
+</div>
+
+<div class="fleet-meter">
+  <div class="bar-track"><div class="bar-fill" style="width: {{ (agency.car_count / agency.MAX_CARS * 100)|round|int }}%"></div></div>
+  <b>{{ t('fleet_status', {'n': agency.car_count, 'max': agency.MAX_CARS}) }}</b>
+</div>
+
+<div class="table-wrap">
+  <table>
+    <tr><th>{{ t('photo') }}</th><th>{{ t('car') }}</th><th>{{ t('category') }}</th><th>{{ t('daily_rate') }}</th><th>{{ t('upload_photo') }}</th><th></th></tr>
+    {% for car in cars %}
+    <tr>
+      <td>
+        {% set p = photo_url(car) %}
+        {% if p %}<img class="thumb" src="{{ p }}" alt="">{% else %}<span class="thumb none"></span>{% endif %}
+      </td>
+      <td><b>{{ car.name }}</b><br><small class="muted">{{ car.year }}</small></td>
+      <td>{{ t('cat_' ~ car.category) }}</td>
+      <td>${{ '%g' % car.daily_rate }}</td>
+      <td>
+        <form class="upload" method="post" enctype="multipart/form-data" action="{{ url_for('admin_car_photo', car_id=car.id) }}">
+          <input type="file" name="photo" accept="image/png,image/jpeg,image/webp" required>
+          <button class="btn small" type="submit">{{ t('upload_photo') }}</button>
+        </form>
+      </td>
+      <td>
+        <form method="post" action="{{ url_for('admin_remove_car', car_id=car.id) }}"
+              onsubmit="return confirm('{{ t('confirm_remove') }}')">
+          <button class="btn small danger" type="submit">{{ t('remove') }}</button>
+        </form>
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
+</div>
+<p class="muted small-note">{{ t('photo_hint') }}</p>
+
+<section class="panel">
+  <h2>{{ t('add_car') }}</h2>
+  {% if agency.is_full %}
+    <p class="flash error">{{ t('err_fleet_full', {'max': agency.MAX_CARS}) }}</p>
+  {% else %}
+  <form method="post" enctype="multipart/form-data" action="{{ url_for('admin_add_car') }}" class="admin-form">
+    <label>{{ t('category') }}
+      <select name="category">
+        {% for c in categories %}<option value="{{ c }}">{{ t('cat_' ~ c) }}</option>{% endfor %}
+      </select>
+    </label>
+    <label>{{ t('brand') }}<input name="brand" required maxlength="40"></label>
+    <label>{{ t('model') }}<input name="model" required maxlength="40"></label>
+    <label>{{ t('year') }}<input type="number" name="year" min="1990" max="2100" value="2023" required></label>
+    <label>{{ t('seats') }}<input type="number" name="seats" min="2" max="9" value="5" required></label>
+    <label>{{ t('transmission') }}
+      <select name="transmission">
+        {% for x in transmissions %}<option value="{{ x }}">{{ t('trans_' ~ x) }}</option>{% endfor %}
+      </select>
+    </label>
+    <label>{{ t('fuel') }}
+      <select name="fuel">
+        {% for x in fuels %}<option value="{{ x }}">{{ t('fuel_' ~ x) }}</option>{% endfor %}
+      </select>
+    </label>
+    <label>{{ t('daily_rate') }}<input type="number" name="daily_rate" min="1" step="0.5" required></label>
+    <label>{{ t('color') }}<input type="color" name="color" value="#2c3e50"></label>
+    <label>{{ t('photo') }}<input type="file" name="photo" accept="image/png,image/jpeg,image/webp"></label>
+    <div class="filter-actions"><button class="btn sun" type="submit">{{ t('add_car') }}</button></div>
+  </form>
+  {% endif %}
+</section>
+
+<h2 class="section-title">{{ t('all_bookings') }}</h2>
+<div class="table-wrap">
+  <table>
+    <tr><th>#</th><th>{{ t('car') }}</th><th>{{ t('customer') }}</th><th>{{ t('period') }}</th><th>{{ t('total') }}</th><th>{{ t('status') }}</th></tr>
+    {% for b in bookings %}
+    <tr>
+      <td>{{ b.id }}</td>
+      <td>{{ b.car.name }}</td>
+      <td>{{ b.customer.name }}, <bdi dir="ltr">{{ b.customer.phone }}</bdi></td>
+      <td><bdi dir="ltr">{{ b.start }} → {{ b.end }}</bdi></td>
+      <td>${{ '%g' % b.total }}</td>
+      <td><span class="badge {{ 'ok' if b.is_active else 'no' }}">{{ t('status_' ~ b.status) }}</span></td>
+    </tr>
+    {% else %}
+    <tr><td colspan="6" class="muted">{{ t('no_bookings') }}</td></tr>
+    {% endfor %}
+  </table>
+</div>
+{% endblock %}
