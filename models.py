@@ -170,9 +170,9 @@ class EconomyCar(Vehicle):
     def calculate_cost(self, days):
         return round(self.daily_rate * days, 2)
 
-class EconomyCar(Vehicle):
+class portsCar(Vehicle):
     CATEGORY = "Sport"
-
+    SERVICE_FEE = 30.0
     def calculate_cost(self, days):
         return round(self.daily_rate * days, 2)
 
