@@ -1,4 +1,4 @@
-/* AutoRent - green (Zagros), road-marking yellow, licence-plate prices */
+/* AML Rentals - green (Zagros), road-marking yellow, licence-plate prices */
 :root {
   --ink: #12201a; --green: #0f3d2e; --green-2: #1b6b4f; --sun: #ffc933;
   --bg: #edf0ec; --card: #ffffff; --line: #d9e0d9; --muted: #5d6b63;
@@ -205,3 +205,23 @@ form.upload input { min-width: 190px; }
   .facts { grid-template-columns: 1fr; gap: 2px 0; }
   .facts dd { margin-bottom: 10px; }
 }
+
+/* admin: inline price editor */
+form.price-edit { display: flex !important; gap: 8px; align-items: center; margin: 0 !important; }
+.money { position: relative; display: block; width: 104px; }
+.money i { position: absolute; inset-block: 0; inset-inline-start: 11px; display: grid; place-items: center; font-style: normal; font-weight: 600; color: var(--muted); }
+.money input { padding-inline-start: 24px; }
+
+/* banner graphic: topographic lines with a route between two points */
+.hero-graphic { position: absolute; inset-block: 0; inset-inline-end: 0; width: min(62%, 780px); pointer-events: none;
+  -webkit-mask-image: linear-gradient(to right, transparent 0, #000 38%); mask-image: linear-gradient(to right, transparent 0, #000 38%); }
+.hero-graphic svg { width: 100%; height: 100%; display: block; }
+[dir=rtl] .hero-graphic { -webkit-mask-image: linear-gradient(to left, transparent 0, #000 38%); mask-image: linear-gradient(to left, transparent 0, #000 38%); }
+[dir=rtl] .hero-graphic svg { transform: scaleX(-1); }
+.hero-copy { z-index: 1; }
+.hero-graphic .route { stroke-dasharray: 1; stroke-dashoffset: 0; animation: route-draw 1.8s .25s cubic-bezier(.4,0,.2,1) both; }
+.hero-graphic .pins { animation: pins-in .5s 1.6s ease-out both; }
+@keyframes route-draw { from { stroke-dashoffset: 1; } }
+@keyframes pins-in { from { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .hero-graphic .route, .hero-graphic .pins { animation: none; } }
+@media (max-width: 860px) { .hero-graphic { width: 100%; opacity: .45; } }

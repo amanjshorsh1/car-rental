@@ -259,6 +259,17 @@ def admin_add_car():
     return redirect(url_for("admin"))
 
 
+@app.route("/admin/cars/<int:car_id>/price", methods=["POST"])
+@admin_required
+def admin_car_price(car_id):
+    try:
+        agency.update_price(car_id, request.form.get("daily_rate"))
+        notify("success", "msg_price_updated")
+    except RentalError as error:
+        notify_error(error)
+    return redirect(url_for("admin"))
+
+
 @app.route("/admin/cars/<int:car_id>/photo", methods=["POST"])
 @admin_required
 def admin_car_photo(car_id):

@@ -170,12 +170,6 @@ class EconomyCar(Vehicle):
     def calculate_cost(self, days):
         return round(self.daily_rate * days, 2)
 
-class portsCar(Vehicle):
-    CATEGORY = "Sport"
-    SERVICE_FEE = 30.0
-    def calculate_cost(self, days):
-        return round(self.daily_rate * days, 2)
-
 
 class SUV(Vehicle):
     CATEGORY = "suv"
@@ -197,9 +191,17 @@ class LuxuryCar(Vehicle):
         return round(self.daily_rate * days + self.SERVICE_FEE, 2)
 
 
+class SportCar(Vehicle):
+    CATEGORY = "sport"
+    SERVICE_FEE = 30.0
+
+    def calculate_cost(self, days):
+        return round(self.daily_rate * days + self.SERVICE_FEE, 2)
+
+
 class CarFactory:
     """Creates the correct Vehicle subclass from a category string."""
-    _registry = {cls.CATEGORY: cls for cls in (EconomyCar, SUV, LuxuryCar)}
+    _registry = {cls.CATEGORY: cls for cls in (EconomyCar, SUV, LuxuryCar, SportCar)}
 
     @classmethod
     def categories(cls):
@@ -298,6 +300,13 @@ class CarRentalAgency:
                    for b in self._bookings.values()):
                 raise CarHasBookingsError()
             del self._cars[car.id]
+
+    def update_price(self, car_id, new_rate):
+        """Change a car's daily rate. Existing bookings keep the price they were made at."""
+        with self._lock:
+            car = self.get_car(car_id)
+            car.daily_rate = new_rate        # validated by the Vehicle property setter
+            return car
 
     def get_car(self, car_id):
         try:
