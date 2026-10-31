@@ -1,16 +1,19 @@
 {% extends "base.html" %}
-{% from "_macros.html" import car_art, car_visual, specs %}
+{% from "_macros.html" import car_visual, specs, icon %}
 
 {% block hero %}
 <section class="hero">
-  <div class="wrap hero-grid">
+  <div class="wrap">
     <div class="hero-copy">
       <h1>{{ t('hero_title') }}</h1>
       <p>{{ t('hero_sub') }}</p>
-    </div>
-    <div class="hero-art">
-      {{ car_art('luxury', '#ffc933') }}
-      <div class="road"></div>
+      {% if agency.car_count %}
+      <ul class="hero-facts">
+        <li>{{ icon('check') }}{{ t('hero_fact_cars', {'n': agency.car_count}) }}</li>
+        <li>{{ icon('check') }}{{ t('hero_fact_from', {'p': '%g' % (agency.list_cars()|map(attribute='daily_rate')|min)}) }}</li>
+        <li>{{ icon('check') }}{{ t('hero_fact_cancel') }}</li>
+      </ul>
+      {% endif %}
     </div>
   </div>
 </section>

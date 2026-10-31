@@ -170,6 +170,12 @@ class EconomyCar(Vehicle):
     def calculate_cost(self, days):
         return round(self.daily_rate * days, 2)
 
+class EconomyCar(Vehicle):
+    CATEGORY = "Sport"
+
+    def calculate_cost(self, days):
+        return round(self.daily_rate * days, 2)
+
 
 class SUV(Vehicle):
     CATEGORY = "suv"
@@ -189,14 +195,7 @@ class LuxuryCar(Vehicle):
 
     def calculate_cost(self, days):
         return round(self.daily_rate * days + self.SERVICE_FEE, 2)
-    
-    
-class SportsCar(Vehicle):
-    CATEGORY = "Sport"
-    SERVICE_FEE = 50.0
-    
-    def calculate_cost(self, days):
-            return round(self.daily_rate * days + self.SERVICE_FEE, 2)
+
 
 class CarFactory:
     """Creates the correct Vehicle subclass from a category string."""
